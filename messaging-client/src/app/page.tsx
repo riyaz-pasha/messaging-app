@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import Login from "./components/Login";
+import Login from "./login/page";
+import useLocalStorage from "./hooks/useLocalStorage";
+import Dashboard from "./dashboard/page";
 
 export default function Home() {
-  const [id, setId] = useState();
-  return (
-    <>
-      {id}
-      <Login onIdSubmit={setId} />;
-    </>
-  );
+  const [id, setId] = useLocalStorage("id", "");
+
+  if (!id) {
+    return <Login onIdSubmit={setId} />;
+  }
+
+  return <Dashboard id={id} />;
 }
