@@ -1,10 +1,10 @@
 import useLocalStorage from "@/app/hooks/useLocalStorage";
 import { createContext, useContext } from "react";
-import { IChat } from "./ChatsContext";
+import { ChatId, IChatWithContact, useChatsContext } from "./ChatsContext";
 
 export type SelectedChatContextType = {
-  selectedChat: IChat | null;
-  selectChat: (chat: IChat) => void;
+  selectedChat: IChatWithContact | null;
+  selectChat: (chatId: ChatId | null) => void;
 };
 
 const SelectedChatContext = createContext<SelectedChatContextType>(
@@ -16,13 +16,18 @@ export function useSelectedChatContext() {
 }
 
 export const SelectedChatProvider = ({ children }) => {
-  const [selectedChat, setSelectedChat] = useLocalStorage<IChat | null>(
-    "selectedChat",
+  const { chats } = useChatsContext();
+  const [selectedChatId, setSelectedChatId] = useLocalStorage<ChatId | null>(
+    "selectedChatId",
     null
   );
 
-  function selectChat(chat: IChat) {
-    setSelectedChat(chat);
+  const selectedChat =
+    (selectedChatId && chats.find((chat) => chat.id === selectedChatId)) ||
+    null;
+
+  function selectChat(chatId: ChatId | null) {
+    setSelectedChatId(chatId);
   }
 
   return (

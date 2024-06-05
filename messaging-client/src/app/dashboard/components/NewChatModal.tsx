@@ -2,27 +2,15 @@ import { FormEvent, useState } from "react";
 import { Button, Form, Modal, Stack } from "react-bootstrap";
 import { v4 as uuidV4 } from "uuid";
 import { useChatsContext } from "../contexts/ChatsContext";
-import { IContact, useContactsContext } from "../contexts/ContactsContext";
+import { ContactId, useContactsContext } from "../contexts/ContactsContext";
 
 export default function NewChatModal({ closeModal }) {
-  const [selectedContacts, setSelectedContacts] = useState<IContact[]>([]);
+  const [selectedContactIds, setSelectedContactIds] = useState<ContactId[]>([]);
   const { contacts } = useContactsContext();
   const { createChat } = useChatsContext();
 
   function handleCheckboxChange(contactId: string) {
-    console.log("🚀 ~ handleCheckboxChange ~ contactId:", contactId);
-    const selectedContact = contacts.find(
-      (contact) => contact.id === contactId
-    )!;
-    if (!selectedContacts.some((contact) => contact.id === contactId)) {
-      setSelectedContacts([...selectedContacts, selectedContact]);
-      return;
-    }
-    setSelectedContacts(
-      selectedContacts.filter(
-        (alreadySelectedContact) => alreadySelectedContact.id !== contactId
-      )
-    );
+    setSelectedContactIds([...selectedContactIds, contactId]);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
@@ -30,7 +18,7 @@ export default function NewChatModal({ closeModal }) {
 
     createChat({
       id: uuidV4(),
-      recipients: selectedContacts,
+      recipientIds: selectedContactIds,
       messages: [],
     });
 

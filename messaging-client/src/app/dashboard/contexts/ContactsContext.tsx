@@ -1,8 +1,10 @@
 import useLocalStorage from "@/app/hooks/useLocalStorage";
 import { createContext, useContext } from "react";
 
+export type ContactId = string;
+
 export interface IContact {
-  id: string;
+  id: ContactId;
   name: string;
 }
 

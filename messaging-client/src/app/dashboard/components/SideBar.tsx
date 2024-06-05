@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Button,
   Card,
@@ -29,6 +29,10 @@ export default function SideBar({ id }) {
     setModelOpen(false);
   }
 
+  const copyToClipboard = useCallback(async () => {
+    await navigator.clipboard.writeText(id);
+  }, [id]);
+
   return (
     <div className="d-flex flex-column ps-4 pb-4">
       <TabContainer activeKey={activeTab} onSelect={setActiveTab}>
@@ -52,7 +56,9 @@ export default function SideBar({ id }) {
           <Card.Body>
             <Card.Text>
               Your Id
-              <span className="text-muted"> {id}</span>
+              <Button variant="link" onClick={copyToClipboard}>
+                {id}
+              </Button>
             </Card.Text>
             <Button onClick={() => setModelOpen(true)}>
               New {chatsOpen ? "Chat" : "Contact"}

@@ -1,12 +1,13 @@
-import React from "react";
-import SideBar from "./components/SideBar";
 import ChatWindow from "./components/ChatWindow";
+import SideBar from "./components/SideBar";
+import { useSelectedChatContext } from "./contexts/SelectedChatContext";
 
 export default function Dashboard({ id }) {
+  const { selectedChat } = useSelectedChatContext();
   return (
     <div className="d-flex" style={{ height: "100vh" }}>
       <SideBar id={id} />
-      <ChatWindow />
+      {selectedChat && <ChatWindow selectedChat={selectedChat} />}
     </div>
   );
 }
