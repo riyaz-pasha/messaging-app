@@ -2,7 +2,7 @@ import useLocalStorage from "@/app/hooks/useLocalStorage";
 import { createContext, useContext } from "react";
 
 export interface IContact {
-  id: number;
+  id: string;
   name: string;
 }
 
@@ -11,9 +11,9 @@ export type ContactContextType = {
   createContact: (contact: IContact) => void;
 };
 
-const ContactsContext = createContext<ContactContextType>(
-  {} as ContactContextType
-);
+const ContactsContext = createContext<ContactContextType>({
+  contacts: [],
+} as unknown as ContactContextType);
 
 export function useContactsContext() {
   return useContext(ContactsContext);

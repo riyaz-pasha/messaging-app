@@ -1,18 +1,38 @@
-import { FormEvent, useRef } from "react";
+import { FormEvent, useState } from "react";
 import { Button, Form, Modal, Stack } from "react-bootstrap";
-import {
-  useContactsContext
-} from "../contexts/ContactsContext";
+import { v4 as uuidV4 } from "uuid";
+import { useChatsContext } from "../contexts/ChatsContext";
+import { IContact, useContactsContext } from "../contexts/ContactsContext";
 
 export default function NewChatModal({ closeModal }) {
-  const idRef = useRef();
-  const nameRef = useRef();
-  const { createContact } = useContactsContext();
+  const [selectedContacts, setSelectedContacts] = useState<IContact[]>([]);
+  const { contacts } = useContactsContext();
+  const { createChat } = useChatsContext();
+
+  function handleCheckboxChange(contactId: string) {
+    console.log("🚀 ~ handleCheckboxChange ~ contactId:", contactId);
+    const selectedContact = contacts.find(
+      (contact) => contact.id === contactId
+    )!;
+    if (!selectedContacts.some((contact) => contact.id === contactId)) {
+      setSelectedContacts([...selectedContacts, selectedContact]);
+      return;
+    }
+    setSelectedContacts(
+      selectedContacts.filter(
+        (alreadySelectedContact) => alreadySelectedContact.id !== contactId
+      )
+    );
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
 
-    createContact({ id: idRef?.current?.value, name: nameRef?.current?.value });
+    createChat({
+      id: uuidV4(),
+      recipients: selectedContacts,
+      messages: [],
+    });
 
     closeModal();
   }
@@ -25,17 +45,21 @@ export default function NewChatModal({ closeModal }) {
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
           <Stack gap={3}>
-            <Form.Group>
-              <Form.Label>Id</Form.Label>
-              <Form.Control type="text" required ref={idRef} />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" required ref={nameRef} />
-            </Form.Group>
+            {contacts.map((contact) => {
+              return (
+                <Form.Group controlId={contact.id} key={contact.id}>
+                  <Form.Check
+                    type="checkbox"
+                    id={contact.id}
+                    label={contact.name}
+                    onChange={() => handleCheckboxChange(contact.id)}
+                  />
+                </Form.Group>
+              );
+            })}
             <Form.Group>
               <Button type="submit" variant="primary">
-                Save Changes
+                Create
               </Button>
             </Form.Group>
           </Stack>
